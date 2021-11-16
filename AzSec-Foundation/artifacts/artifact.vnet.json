@@ -1,0 +1,200 @@
+{
+    "kind": "template",
+    "id": "/providers/Microsoft.Blueprint/blueprints/azsec_foundation/artifacts/vnet_blueprint",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "name": "vnet_blueprint",
+    "properties": {
+        "resourceGroup": "projectResourceGroup",
+        "displayName": "Virtual Network template",
+        "description": "A blueprint to deploy a baseline virtual network",
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "resourceTags": {
+                    "type": "object",
+                    "defaultValue": {
+                        "CostCenter": "",
+                        "Owner": ""
+                    },
+                    "metadata": {
+                        "displayName": "Global resource tag that follows Azure governance"
+                    }
+                },
+                "projectCode": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 5,
+                    "metadata": {
+                        "displayName": "Project Code (e.g. AGS), must be unique"
+                    }
+                },
+                "projectStage": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 5,
+                    "defaultValue": "dev",
+                    "allowedValues": [
+                        "prod",
+                        "dev",
+                        "test",
+                        "uat"
+                    ],
+                    "metadata": {
+                        "displayName": "Project Stage",
+                        "description": "Specify project stage"
+                    }
+                },
+                "vnetAddressPrefix": {
+                    "type": "string",
+                    "metadata": {
+                        "displayName": "Virtual Network address prefix for project",
+                        "description": "VNet Address prefix for project - Work with AGS team for the correct value"
+                    }
+                },
+                "devSubnetAddressPrefix": {
+                    "type": "string",
+                    "metadata": {
+                        "displayName": "Shared Dev Subnet for developer VM",
+                        "description": "A subnet for developer VM"
+                    }
+                },
+                "dmzSubnetAddressPrefix": {
+                    "type": "string",
+                    "metadata": {
+                        "displayName": "DMZ Subnet Prefix",
+                        "description": "A subnet prefix for DMZ "
+                    }
+                },
+                "appGatewaySubnetPrefix": {
+                    "type": "string",
+                    "metadata": {
+                        "displayName": "Application Gateway Subnet Prefix",
+                        "description": "Subnet prefix for Application Gateway service"
+                    }
+                },
+                "gatewaySubnetPrefix": {
+                    "type": "string",
+                    "metadata": {
+                        "displayName": "Virtual Network Gateway subnet",
+                        "description": "Subnet prefix of VNet gateway"
+                    }
+                },
+                "azureFirewallSubnetPrefix": {
+                    "type": "string",
+                    "metadata": {
+                        "displayName": "Azure Firewall Subnet",
+                        "description": "Subnet prefix of Azure Firewall"
+                    }
+                },
+                "logRetentionInDays": {
+                    "type": "int",
+                    "minValue": 30,
+                    "maxValue": 365,
+                    "metadata": {
+                        "displayName": "Log rention in days",
+                        "description": "Specify number of days logs will be kept"
+                    }
+                }
+            },
+            "variables": {
+                "customTag": {
+                    "ProjectCode": "[parameters('projectCode')]",
+                    "Environemnt": "[parameters('projectStage')]"
+                },
+                "vnetName": "[concat(parameters('projectCode'), '-', parameters('projectStage'), '-vnet')]",
+                "userDefinedRoutes": [
+                    {
+                        "name": "shared-subnet",
+                        "routes": []
+                    }
+                ],
+                "subnets": [
+                    {
+                        "name": "[concat(parameters('projectCode'), '-', parameters('projectStage'), '-dev-subnet')]",
+                        "addressPrefix": "[parameters('devSubnetAddressPrefix')]",
+                        "networkSecurityGroupName": "[concat(variables('subnets')[0].name)),'-nsg')]"
+                    },
+                    {
+                        "name": "[concat(parameters('projectCode'), '-', parameters('projectStage'), '-dmz-subnet')]",
+                        "addressPrefix": "[parameters('dmzSubnetAddressPrefix')]",
+                        "networkSecurityGroupName": "[concat(variables('subnets')[1].name)),'-nsg')]"
+                    },
+                    {
+                        "name": "[concat(parameters('projectCode'), '-', parameters('projectStage'), '-appgateway-subnet')]",
+                        "addressPrefix": "[parameters('appGatewaySubnetPrefix')]",
+                        "networkSecurityGroupName": "[concat(variables('subnets')[2].name)),'-nsg')]"
+                    },
+                    {
+                        "name": "GatewaySubnet",
+                        "addressPrefix": "[parameters('gatewaySubnetPrefix')]"
+                    },
+                    {
+                        "name": "AzureFirewallSubnet",
+                        "addressPrefix": "[parameters('azureFirewallSubnetPrefix')]"
+                    }
+                ],
+                "projectWorkspaceName": "[concat(parameters('projectCode'), '-', parameters('projectStage'), '-workspace')]"
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.Network/routeTables",
+                    "apiVersion": "2019-09-01",
+                    "name": "[concat(variables('userDefinedRoutes')[copyIndex()].name, '-udr')]",
+                    "location": "[resourceGroup().location]",
+                    "tags": "[union(parameters('resourceTags'),variables('customTag'))]",
+                    "copy": {
+                        "count": "[length(variables('userDefinedRoutes'))]",
+                        "name": "udrLoop"
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/virtualNetworks",
+                    "apiVersion": "2018-08-01",
+                    "name": "[variables('vnetName')]",
+                    "tags": "[union(parameters('resourceTags'),variables('customTag'))]",
+                    "dependsOn": [
+                        "udrLoop"
+                    ],
+                    "properties": {
+                        "addressSpace": {
+                            "addressPrefixes": [
+                                "[parameters('vnetAddressPrefix')]"
+                            ]
+                        },
+                        "copy": [
+                            {
+                                "name": "subnets",
+                                "count": "[length(variables('subnets'))]",
+                                "input": {
+                                    "name": "[variables('subnets')[copyIndex('subnets')].name]",
+                                    "properties": {
+                                        "addressPrefix": "[variables('subnets')[copyIndex('subnets')['addressPrefix']]]",
+                                        "networkSecurityGroup": "[if(equals(variables('subnets')[copyIndex('subnets')]['networkSecurityGroupName'], ''), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/networkSecurityGroups', '-', variables('subnets')[copyIndex('subnets')]['networkSecurityGroupName'])), '\"}')))]",
+                                        "routeTable": "[if(equals(variables('subnets')[copyIndex('subnets')]['userDefinedRoutes'], ''), json('null'), json(concat('{\"id\": \"', resourceId('Microsoft.Network/routeTables', '-', variables('subnets')[copyIndex('subnets')]['userDefinedRoutes'], '-udr')), '\"}')))]"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "Microsoft.Network/virtualNetworks/providers/diagnosticSettings",
+                    "apiVersion": "2017-05-01-preview",
+                    "name": "[concat(variables('vnetName'),'/Microsoft.Insights/service')]",
+                    "location": "[resourceGroup().location]",
+                    "tags": "[union(parameters('resourceTags'),variables('customTag'))]",
+                    "dependsOn": [
+                        "[variables('vnetName')]"
+                    ],
+                    "properties": {
+                        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('projectWorkspaceName'))]"
+                    }
+                }
+            ],
+            "outputs": {}
+        },
+        "parameters": {},
+        "dependsOn": []
+    }
+}

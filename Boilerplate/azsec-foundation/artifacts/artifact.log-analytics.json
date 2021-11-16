@@ -1,0 +1,33 @@
+{
+    "kind": "template",
+    "id": "/providers/Microsoft.Blueprint/blueprints/azsec_foundation/artifacts/loganalytics_blueprint",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "name": "loganalytics_blueprint",
+    "properties": {
+        "resourceGroup": "projectResourceGroup",
+        "displayName": "Log Analytics template",
+        "description": "A blueprint to deploy Log Analytics",
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+
+            },
+            "variables": {
+
+            },
+            "resources": [
+
+            ],
+            "outputs": {
+
+            }
+        },
+        "parameters": {
+            
+        },
+        "dependsOn": [
+            
+        ]
+    }
+}

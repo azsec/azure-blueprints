@@ -1,0 +1,246 @@
+{
+    "kind": "template",
+    "id": "/providers/Microsoft.Blueprint/blueprints/app_blueprint/artifacts/sql_blueprint",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "name": "sql_blueprint",
+    "properties": {
+        "resourceGroup": "projectResourceGroup",
+        "displayName": "Azure SQL service template",
+        "description": "An artifact to deploy managed Azure SQL service",
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "resourceTags": {
+                    "type": "object",
+                    "defaultValue": {
+                        "CostCenter": "",
+                        "Owner": ""
+                    },
+                    "metadata": {
+                        "displayName": "Global resource tag that follows Azure governance"
+                    }
+                },
+                "projectCode": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 5,
+                    "metadata": {
+                        "displayName": "Project Code (e.g. AGS), must be unique"
+                    }
+                },
+                "projectStage": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 5,
+                    "defaultValue": "dev",
+                    "allowedValues": [
+                        "prod",
+                        "dev",
+                        "test",
+                        "uat"
+                    ],
+                    "metadata": {
+                        "displayName": "Project Stage",
+                        "description": "Specify project stage"
+                    }
+                },
+                "location": {
+                    "type": "string",
+                    "defaultValue": "[resourceGroup().location]",
+                    "metadata": {
+                        "displayName": "Location for all resources."
+                    }
+                },
+                "appName": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "The name of your Web App"
+                    }
+                },
+                "dbSkuType": {
+                    "type": "string",
+                    "allowedValues": [
+                        "S0",
+                        "S1",
+                        "S2"
+                    ],
+                    "metadata": {
+                        "description": "Select Db SKU type"
+                    }
+                },
+                "dbServiceTier": {
+                    "type": "string",
+                    "allowedValues": [
+                        "Basic",
+                        "Standard",
+                        "Premium"
+                    ],
+                    "metadata": {
+                        "description": "Select Service Tier of DB"
+                    }
+                },
+                "sqlAdminUser": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "The administrator username of the managed SQL logical server"
+                    }
+                },
+                "sqlAdminPassword": {
+                    "type": "string",
+                    "metadata": {
+                        "description": "The administrator's password of the managed SQL logical server"
+                    }
+                },
+                "emailAddress": {
+                    "type": "array",
+                    "metadata": {
+                        "description": "Email for Threat Detection"
+                    }
+                },
+                "adsEnabled": {
+                    "type": "bool",
+                    "defaultValue": true,
+                    "allowedValues": [
+                        true,
+                        false
+                    ],
+                    "metadata": {
+                        "description": "Enable Advanted Threat Protection in SQL logical server"
+                    }
+                },
+                "transparentDataEncryption": {
+                    "type": "string",
+                    "defaultValue": "Enabled",
+                    "allowedValues": [
+                        "Enabled",
+                        "Disabled"
+                    ],
+                    "metadata": {
+                        "description": "Enable or disable TDE feature"
+                    }
+                },
+                "atpLogRetentionDay": {
+                    "type": "int",
+                    "defaultValue": 30,
+                    "metadata": {
+                        "description": "Specify log retention date"
+                    }
+                }
+            },
+            "variables": {
+                "customTag": {
+                    "ProjectCode": "[parameters('projectCode')]",
+                    "Environemnt": "[parameters('projectStage')]"
+                },
+                "storageAccountName": "[concat('sqlaudit', uniquestring(resourceGroup().id))]",
+                "sqlServerName": "[concat(parameters('projectCode'),'-','sqlsrv-',parameters('projectStage'),'-',parameters('location'))]",
+                "dbName": "[concat(parameters('projectCode'),'-',parameters('projectStage'), '-', parameters('appName'), '-', 'db')]",
+                "storageEndpoint": "[concat(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')))]"
+            },
+            "resources": [
+                {
+                    "name": "[variables('sqlServerName')]",
+                    "type": "Microsoft.Sql/servers",
+                    "apiVersion": "2018-06-01-preview",
+                    "location": "[parameters('location')]",
+                    "tags": "[union(parameters('resourceTags'),variables('customTag'))]",
+                    "properties": {
+                        "administratorLogin": "[parameters('sqlAdminUser')]",
+                        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+                        "version": "12.0"
+                    },
+                    "resources": [
+                        {
+                            "condition": "[parameters('adsEnabled')]",
+                            "type": "securityAlertPolicies",
+                            "name": "Default",
+                            "apiVersion": "2017-03-01-preview",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+                            ],
+                            "properties": {
+                                "state": "Enabled",
+                                "emailAccountAdmins": true,
+                                "emailAddresses": "[parameters('emailAddress')]",
+                                "storageEndpoint": "[reference(variables('storageEndpoint'), '2018-03-01-preview').PrimaryEndpoints.Blob]",
+                                "storageAccountAccessKey": "[listKeys(variables('storageEndpoint'), '2018-03-01-preview').keys[0].value]",
+                                "retentionDays": "[parameters('atpLogRetentionDay')]"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "[concat(string(variables('sqlServerName')), '/', string(variables('dbName')))]",
+                    "type": "Microsoft.Sql/servers/databases",
+                    "apiVersion": "2017-03-01-preview",
+                    "sku": {
+                        "name": "[parameters('dbSkuType')]",
+                        "tier": "[parameters('dbServiceTier')]"
+                    },
+                    "kind": "v12.0,user",
+                    "location": "[parameters('location')]",
+                    "tags": "[union(parameters('resourceTags'),variables('customTag'))]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Sql/servers/', variables('sqlServerName'))]"
+                    ],
+                    "resources": [
+                        {
+                            "name": "current",
+                            "type": "transparentDataEncryption",
+                            "apiVersion": "2017-03-01-preview",
+                            "dependsOn": [
+                                "[variables('dbName')]"
+                            ],
+                            "properties": {
+                                "status": "[parameters('transparentDataEncryption')]"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "outputs": {}
+        },
+        "parameters": {
+            "resourceTags": {
+                "value": "[parameters('g_resourceTags')]"
+            },
+            "projectCode": {
+                "value": "[parameters('g_projectCode')]"
+            },
+            "projectStage": {
+                "value": "[parameters('g_projectStage')]"
+            },
+            "appName": {
+                "value": "[parameters('g_appName')]"
+            },
+            "dbSkuType": {
+                "value": "[parameters('g_dbSkuType')]"
+            },
+            "dbServiceTier": {
+                "value": "[parameters('g_dbServiceTier')]"
+            },
+            "sqlAdminUser": {
+                "value": "[parameters('g_sqlAdminUser')]"
+            },
+            "sqlAdminPassword": {
+                "value": "[parameters('g_sqlAdminPassword')]"
+            },
+            "emailAddress": {
+                "value": "[parameters('g_emailAddress')]"
+            },
+            "adsEnabled": {
+                "value": "[parameters('g_adsEnabled')]"
+            },
+            "transparentDataEncryption": {
+                "value": "[parameters('g_transparentDataEncryption')]"
+            },
+            "atpLogRetentionDay": {
+                "value": "[parameters('g_atpLogRetentionDay')]"
+            }
+        },
+        "dependsOn": [
+            "artifact.storage"
+        ]
+    }
+}

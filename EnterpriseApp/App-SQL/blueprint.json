@@ -1,0 +1,348 @@
+{
+    "id": "/providers/Microsoft.Blueprint/blueprints/app_blueprint",
+    "type": "Microsoft.Blueprint/blueprints",
+    "name": "app_blueprint",
+    "properties": {
+        "targetScope": "subscription",
+        "displayName": "App Service Blueprint",
+        "description": "App Service Blueprint provides foundation services to deploy your app in Azure",
+        "parameters": {
+            "g_resourceTags": {
+                "type": "object",
+                "defaultValue": {
+                    "CostCenter": "",
+                    "Owner": ""
+                },
+                "metadata": {
+                    "displayName": "Global resource tag that follows Azure governance"
+                }
+            },
+            "g_projectCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 5,
+                "metadata": {
+                    "displayName": "Project code (e.g. AZS), must be unique"
+                }
+            },
+            "g_projectStage": {
+                "type": "string",
+                "allowedValues": [
+                    "prod",
+                    "dev",
+                    "test",
+                    "uat"
+                ],
+                "metadata": {
+                    "displayName": "Project stage",
+                    "description": "Specify stage of the project"
+                }
+            },
+            "g_resourceGroupLocation": {
+                "type": "string",
+                "allowedValues": [
+                    "eastasia",
+                    "southeastasia",
+                    "centralus",
+                    "eastus",
+                    "eastus2",
+                    "westus",
+                    "northcentralus",
+                    "southcentralus",
+                    "northeurope",
+                    "westeurope",
+                    "japanwest",
+                    "japaneast",
+                    "southindia",
+                    "centralindia",
+                    "westindia",
+                    "westcentralus",
+                    "westus2"
+                ],
+                "metadata": {
+                    "displayName": "Resource group location"
+                }
+            },
+            "g_appName": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "App Name",
+                    "description": "The name of your Web App"
+                }
+            },
+            "g_appServiceSkuName": {
+                "type": "string",
+                "allowedValues": [
+                    "B1",
+                    "B2",
+                    "B3",
+                    "S1",
+                    "S2",
+                    "S3",
+                    "P1V2",
+                    "P2v2",
+                    "P3v2"
+                ],
+                "metadata": {
+                    "displayName": "App Service SKU",
+                    "description": "Select an App Service Plan. Note that all B (Basic) plan doesn't support Daily Backup"
+                }
+            },
+            "g_appServiceSkuCapacity": {
+                "type": "int",
+                "minValue": 1,
+                "maxValue": 10,
+                "metadata": {
+                    "displayName": "App Service SKU Capacity",
+                    "description": "Specify number of instance. Different App Service Plan have different support limit."
+                }
+            },
+            "g_dbSkuType": {
+                "type": "string",
+                "allowedValues": [
+                    "S0",
+                    "S1",
+                    "S2"
+                ],
+                "metadata": {
+                    "displayName": "Azure SQL Database SKU",
+                    "description": "Select Db SKU type"
+                }
+            },
+            "g_dbServiceTier": {
+                "type": "string",
+                "allowedValues": [
+                    "Basic",
+                    "Standard",
+                    "Premium"
+                ],
+                "metadata": {
+                    "displayName": "Azure Database SQL Service Tier",
+                    "description": "Select Service Tier of DB"
+                }
+            },
+            "g_sqlAdminUser": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "Azure SQL Service Admin",
+                    "description": "The administrator username of the managed SQL logical server"
+                }
+            },
+            "g_sqlAdminPassword": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "Azure SQL Server Admin Password",
+                    "description": "The administrator's password of the managed SQL logical server"
+                }
+            },
+            "g_emailAddress": {
+                "type": "array",
+                "defaultValue": "info@azsec.azurewebsites.net",
+                "metadata": {
+                    "displayName": "Email address for Threat Detection",
+                    "description": "Email for Threat Detection"
+                }
+            },
+            "g_adsEnabled": {
+                "type": "bool",
+                "defaultValue": true,
+                "allowedValues": [
+                    true,
+                    false
+                ],
+                "metadata": {
+                    "displayName": "Enable Advanced Threat Protection",
+                    "description": "Enable Advanted Threat Protection in SQL logical server"
+                }
+            },
+            "g_transparentDataEncryption": {
+                "type": "string",
+                "defaultValue": "Enabled",
+                "allowedValues": [
+                    "Enabled",
+                    "Disabled"
+                ],
+                "metadata": {
+                    "displayName": "Enable Transparent Data Encryption",
+                    "description": "Enable or disable TDE feature"
+                }
+            },
+            "g_atpLogRetentionDay": {
+                "type": "int",
+                "defaultValue": 30,
+                "metadata": {
+                    "displayName": "Advanced Threat Protection Log Retention In Day",
+                    "description": "Specify log retention date"
+                }
+            },
+            "g_storageAccountSku": {
+                "type": "string",
+                "defaultValue": "Standard_LRS",
+                "allowedValues": [
+                    "Standard_LRS",
+                    "Standard_GRS",
+                    "Standard_RAGRS",
+                    "Standard_ZRS",
+                    "Premium_LRS",
+                    "Premium_ZRS",
+                    "Standard_GZRS",
+                    "Standard_RAGZRS"
+                ],
+                "metadata": {
+                    "description": "Storage Account type. Each type support different replication"
+                }
+            },
+            "g_storageAccountType": {
+                "type": "string",
+                "defaultValue": "StorageV2",
+                "metadata": {
+                    "description": "Storage account type. V2 is always recommended"
+                }
+            },
+            "g_advancedThreatProtectionEnabled": {
+                "type": "bool",
+                "defaultValue": true,
+                "allowedValues": [
+                    true,
+                    false
+                ],
+                "metadata": {
+                    "description": "Enable or disable Advanced Threat Protection."
+                }
+            },
+            "g_redisCacheSku": {
+                "type": "string",
+                "allowedValues": [
+                    "Basic",
+                    "Standard",
+                    "Premium"
+                ],
+                "metadata": {
+                    "displayName": "Azure Redis Cache SKU",
+                    "description": "Specify SKU for Azure Redis Cache"
+                }
+            },
+            "g_redisCacheFamily": {
+                "type": "string",
+                "allowedValues": [
+                    "C",
+                    "P"
+                ],
+                "metadata": {
+                    "displayName": "Redis Cache Family"
+                }
+            },
+            "g_redisCacheCapacity": {
+                "type": "int",
+                "allowedValues": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "metadata": {
+                    "displayName": "Redis Cache Capacity",
+                    "description": "Specify Redis Cache capacity"
+                }
+            },
+            "g_enableNonSslPort": {
+                "type": "bool",
+                "allowedValues": [
+                    false
+                ],
+                "metadata": {
+                    "displayName": "SSL Enforcement",
+                    "description": "Enforce SSL for Redis Cache"
+                }
+            },
+            "g_redisCacheSku": {
+                "type": "string",
+                "allowedValues": [
+                    "Basic",
+                    "Standard",
+                    "Premium"
+                ],
+                "metadata": {
+                    "displayName": "Azure Redis Cache SKU",
+                    "description": "Specify SKU for Azure Redis Cache"
+                }
+            },
+            "g_redisCacheFamily": {
+                "type": "string",
+                "allowedValues": [
+                    "C",
+                    "P"
+                ],
+                "metadata": {
+                    "displayName": "Redis Cache Family"
+                }
+            },
+            "g_redisCacheCapacity": {
+                "type": "int",
+                "allowedValues": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ],
+                "metadata": {
+                    "displayName": "Redis Cache Capacity",
+                    "description": "Specify Redis Cache capacity"
+                }
+            },
+            "g_enableNonSslPort": {
+                "type": "bool",
+                "allowedValues": [
+                    false
+                ],
+                "metadata": {
+                    "displayName": "SSL Enforcement",
+                    "description": "Enforce SSL for Redis Cache"
+                }
+            },
+            "g_keyVaultSku": {
+                "type": "string",
+                "allowedValues": [
+                    "Standard",
+                    "Premium"
+                ],
+                "metadata": {
+                    "displayName": "Key Vault SKU",
+                    "description": "Select SKU for Key Vault - Standard or Premium"
+                }
+            },
+            "g_adminObjectId": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "Key Vault Admin Object ID",
+                    "description": "AAD Object ID of the user that requires access to Key Vault."
+                }
+            },
+            "g_logRetentionInDays": {
+                "type": "int",
+                "minValue": 30,
+                "maxValue": 365,
+                "metadata": {
+                    "displayName": "Log rention in days",
+                    "description": "Specify number of days logs will be kept"
+                }
+            }
+        },
+        "resourceGroups": {
+            "projectResourceGroup": {
+                "name": "[concat(parameters('g_projectCode'), '-', parameters('g_projectStage'), '-rg')]",
+                "location": "[parameters('g_resourceGroupLocation')]",
+                "metadata": {
+                    "displayName": "Project resource group",
+                    "description": "This resource group contains shared services such as Key Vault, Log Analytics Workspace, Virtual Network"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "kind": "template",
+    "id": "/providers/Microsoft.Blueprint/blueprints/azsec_foundation/artifacts/asc_blueprint",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "name": "asc_blueprint",
+    "properties": {
+        "displayName": "Azure Security Center artifact template",
+        "description": "A artifact to deploy Azure Security Center",
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+
+            },
+            "variables": {
+
+            },
+            "resources": [
+
+            ],
+            "outputs": {
+
+            }
+        },
+        "parameters": {
+            
+        },
+        "dependsOn": [
+
+        ]
+    }
+}

@@ -1,0 +1,195 @@
+{
+    "id": "/providers/Microsoft.Blueprint/blueprints/azure_cis_blueprint",
+    "type": "Microsoft.Blueprint/blueprints",
+    "name": "azure_cis_blueprint",
+    "properties": {
+        "targetScope": "subscription",
+        "displayName": "Azure CIS v1.1.0 Blueprint",
+        "description": "CIS v.1.1.0 blueprint provides a set of standard resources that follow CIS for Azure guidance",
+        "parameters": {
+            "g_virtualMachineTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "2.1 Ensure that standard pricing tier is selected",
+                    "scored": "yes",
+                    "description": "The standard pricing tier enables threat detection for networks and virtual machines, providing threat intelligence, anomaly detection, and behavior analytics in the Azure Security Center.",
+                    "rationale": "Enabling the Standard pricing tier allows for greater defense-in-depth, with threat detection provided by the Microsoft Security Response Center (MSRC).",
+                    "servicetype": "Virtual Machine"
+                }
+            },
+            "g_appServiceTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "2.1 Ensure that standard pricing tier is selected",
+                    "scored": "yes",
+                    "description": "The standard pricing tier enables threat detection for networks and virtual machines, providing threat intelligence, anomaly detection, and behavior analytics in the Azure Security Center.",
+                    "rationale": "Enabling the Standard pricing tier allows for greater defense-in-depth, with threat detection provided by the Microsoft Security Response Center (MSRC).",
+                    "servicetype": "Azure App Service"
+                }
+            },
+            "g_paasSQLServiceTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "2.1 Ensure that standard pricing tier is selected",
+                    "scored": "yes",
+                    "description": "The standard pricing tier enables threat detection for networks and virtual machines, providing threat intelligence, anomaly detection, and behavior analytics in the Azure Security Center.",
+                    "rationale": "Enabling the Standard pricing tier allows for greater defense-in-depth, with threat detection provided by the Microsoft Security Response Center (MSRC).",
+                    "servicetype": "Azure SQL Service"
+                }
+            },
+            "g_sqlServerOnVmTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "2.1 Ensure that standard pricing tier is selected",
+                    "scored": "yes",
+                    "description": "The standard pricing tier enables threat detection for networks and virtual machines, providing threat intelligence, anomaly detection, and behavior analytics in the Azure Security Center.",
+                    "rationale": "Enabling the Standard pricing tier allows for greater defense-in-depth, with threat detection provided by the Microsoft Security Response Center (MSRC).",
+                    "servicetype": "SQL Server On Azure VM"
+                }
+            },
+            "g_storageAccountTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "2.1 Ensure that standard pricing tier is selected",
+                    "scored": "yes",
+                    "description": "The standard pricing tier enables threat detection for networks and virtual machines, providing threat intelligence, anomaly detection, and behavior analytics in the Azure Security Center.",
+                    "rationale": "Enabling the Standard pricing tier allows for greater defense-in-depth, with threat detection provided by the Microsoft Security Response Center (MSRC).",
+                    "servicetype": "Azure Storage Account"
+                }
+            },
+            "g_kubernetesServiceTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "2.1 Ensure that standard pricing tier is selected",
+                    "scored": "yes",
+                    "description": "The standard pricing tier enables threat detection for networks and virtual machines, providing threat intelligence, anomaly detection, and behavior analytics in the Azure Security Center.",
+                    "rationale": "Enabling the Standard pricing tier allows for greater defense-in-depth, with threat detection provided by the Microsoft Security Response Center (MSRC).",
+                    "servicetype": "Azure Kubernetes Service"
+                }
+            },
+            "g_containerRegistryTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "2.1 Ensure that standard pricing tier is selected",
+                    "scored": "yes",
+                    "description": "The standard pricing tier enables threat detection for networks and virtual machines, providing threat intelligence, anomaly detection, and behavior analytics in the Azure Security Center.",
+                    "rationale": "Enabling the Standard pricing tier allows for greater defense-in-depth, with threat detection provided by the Microsoft Security Response Center (MSRC).",
+                    "servicetype": "Azure Container Registry"
+                }
+            },
+            "g_keyvaultTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "2.1 Ensure that standard pricing tier is selected",
+                    "scored": "yes",
+                    "description": "The standard pricing tier enables threat detection for networks and virtual machines, providing threat intelligence, anomaly detection, and behavior analytics in the Azure Security Center.",
+                    "rationale": "Enabling the Standard pricing tier allows for greater defense-in-depth, with threat detection provided by the Microsoft Security Response Center (MSRC).",
+                    "servicetype": "Azure Key Vault"
+                }
+            },
+            "g_autoProvisionSetting": {
+                "type": "string",
+                "defaultValue": "On",
+                "allowedValues": [
+                    "On",
+                    "Off"
+                ],
+                "metadata": {
+                    "displayName": "2.2 Ensure that 'Automatic provisioning of monitoring agent' is set to 'On'",
+                    "scored": "yes",
+                    "description": "Enable automatic provisioning of the monitoring agent to collect security data.",
+                    "rationale": "When Automatic provisioning of monitoring agent is turned on, Azure Security Center provisions the Microsoft Monitoring Agent on all existing supported Azure virtual machines and any new ones that are created. The Microsoft Monitoring Agent scans for various security-related configurations and events such as system updates, OS vulnerabilities, endpoint protection, and provides alerts."
+                }
+            },
+            "g_ascEmailContact": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "2.16 Ensure that 'Security contact emails' is set",
+                    "scored": "yes",
+                    "description": "Provide a security contact email address.",
+                    "rationale": "Microsoft reaches out to the designated security contact in case its security team finds that the organization's resources are compromised. This ensures that the proper people are aware of any potential compromise in order to mitigate the risk in a timely fashion."
+                }
+            },
+            "g_ascPhoneContact": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "2.17 Ensure that security contact 'Phone number' is set",
+                    "scored": "yes",
+                    "description": "Provide a security contact phone number.",
+                    "rationale": "Microsoft reaches out to the designated security contact in case its security team finds that the organization's resources are compromised. This ensures that the proper people are aware of any potential compromise in order to mitigate the risk in a timely fashion.Before taking any action, make sure that the information provided is valid, as the communication is not digitally signed."
+                }
+            },
+            "g_highSeverityAlertNotification": {
+                "type": "string",
+                "defaultValue": "On",
+                "allowedValues": [
+                    "On",
+                    "Off"
+                ],
+                "metadata": {
+                    "displayName": "2.18 Ensure that 'Send email notification for high severity alerts' is set to 'On'",
+                    "scored": "yes",
+                    "description": "Enable emailing security alerts to the security contact.",
+                    "rationale": "Enabling security alert emails ensures that security alert emails are received from Microsoft. This ensures that the right people are aware of any potential security issues and are able to mitigate the risk."
+                }
+            },
+            "g_subscriptionOwnerNotification": {
+                "type": "string",
+                "defaultValue": "On",
+                "allowedValues": [
+                    "On",
+                    "Off"
+                ],
+                "metadata": {
+                    "displayName": "2.19 Ensure that 'Send email also to subscription owners' is set to 'On'",
+                    "scored": "yes",
+                    "description": "Enable security alert emails to subscription owners.",
+                    "rationale": "Enabling security alert emails to subscription owners ensures that they receive security alert emails from Microsoft. This ensures that they are aware of any potential security issues and can mitigate the risk in a timely fashion."
+                }
+            }
+        },
+        "resourceGroups": {
+            
+        }
+    }
+}

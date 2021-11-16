@@ -1,0 +1,92 @@
+{
+    "identity": {
+        "type": "SystemAssigned"
+    },
+    "location": "westus",
+    "properties": {
+        "blueprintId": "subscriptions/xxxxxx-xxxx-xxxx-xxxx-xxxxxx/providers/Microsoft.Blueprint/blueprints/app_blueprint",
+        "resourceGroups": {},
+        "parameters": {
+            "g_resourceTags": {
+                "value": {
+                    "CostCenter": "AzSec",
+                    "Owner": "InfoSec"
+                }
+            },
+            "g_projectCode": {
+                "value": "azs"
+            },
+            "g_projectStage": {
+                "value": "test"
+            },
+            "g_resourceGroupLocation": {
+                "value": "westus"
+            },
+            "g_appName": {
+                "value": "azsec"
+            },
+            "g_appServiceSkuName": {
+                "value": "S1"
+            },
+            "g_appServiceSkuCapacity": {
+                "value": 3
+            },
+            "g_dbSkuType": {
+                "value": "S1"
+            },
+            "g_dbServiceTier": {
+                "value": "Standard"
+            },
+            "g_sqlAdminUser": {
+                "value": "sqladmin"
+            },
+            "g_sqlAdminPassword": {
+                "value": "TempPw@1234"
+            },
+            "g_emailAddress": {
+                "value": [
+                    "andy@azsec.net"
+                ]
+            },
+            "g_adsEnabled": {
+                "value": true
+            },
+            "g_transparentDataEncryption": {
+                "value": "Enabled"
+            },
+            "g_atpLogRetentionDay": {
+                "value": 90
+            },
+            "g_storageAccountSku": {
+                "value": "Standard_LRS"
+            },
+            "g_storageAccountType": {
+                "value": "StorageV2"
+            },
+            "g_advancedThreatProtectionEnabled": {
+                "value": true
+            },
+            "g_redisCacheSku": {
+                "value": "Standard"
+            },
+            "g_redisCacheFamily": {
+                "value": "C"
+            },
+            "g_redisCacheCapacity": {
+                "value": 2
+            },
+            "g_enableNonSslPort": {
+                "value": false
+            },
+            "g_keyVaultSku": {
+                "value": "Standard"
+            },
+            "g_adminObjectId": {
+                "value": "xxxxxx-xxxx-xxxx-xxxx-xxxxxx"
+            },
+            "g_logRetentionInDays": {
+                "value": 90
+            }
+        }
+    }
+}

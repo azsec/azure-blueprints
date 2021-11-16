@@ -1,0 +1,165 @@
+{
+    "id": "/providers/Microsoft.Blueprint/blueprints/azsec_blueprint",
+    "type": "Microsoft.Blueprint/blueprints",
+    "name": "azsec_blueprint",
+    "properties": {
+        "targetScope": "subscription",
+        "displayName": "AzSec Azure Security Center blueprint",
+        "description": "AzSec Azure Security Center blueprint provides reference artifacts for managing your Azure Security Center",
+        "parameters": {
+            "globalworkspaceName": {
+                "type": "string",
+                "defaultValue": "azsec-shared-workspace",
+                "allowedValues": [
+                    "azsec-shared-workspace"
+                ],
+                "metadata": {
+                    "description": "Name of the central Log Analytics workspace that stores security event and data collected by Azure Security Center"
+                }
+            },
+            "globalworkspaceRgName": {
+                "type": "string",
+                "defaultValue": "azsec-corporate-rg",
+                "allowedValues": [
+                    "azsec-corporate-rg"
+                ],
+                "metadata": {
+                    "description": "Name of the resource group where the central log analytics workspace belongs to"
+                }
+            },
+            "autoProvisionSetting": {
+                "type": "string",
+                "defaultValue": "On",
+                "allowedValues": [
+                    "On",
+                    "Off"
+                ],
+                "metadata": {
+                    "description": "Specify whether Auto Provisoning is turned on or off"
+                }
+            },
+            "ascOwnerEmail": {
+                "type": "string",
+                "metadata": {
+                    "description": "Email of the administrator who should be notified about Azure Security Center alert"
+                }
+            },
+            "ascOwnerContact": {
+                "type": "string",
+                "metadata": {
+                    "description": "Phone number of the administrator should be notified about Azure Security Center alert"
+                }
+            },
+            "highSeverityAlertNotification": {
+                "type": "string",
+                "defaultValue": "On",
+                "allowedValues": [
+                    "On",
+                    "Off"
+                ],
+                "metadata": {
+                    "description": "Specify whether you want to notify high severity alert to ASC administrator"
+                }
+            },
+            "subscriptionOwnerNotification": {
+                "type": "string",
+                "defaultValue": "On",
+                "allowedValues": [
+                    "On",
+                    "Off"
+                ],
+                "metadata": {
+                    "description": "Specifiy whether you want to notify high severity alert to subscription owner"
+                }
+            },
+            "virtualMachineTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "description": "Specifiy whether you want to enable Standard tier for Virtual Machine resource type"
+                }
+            },
+            "appServiceTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "description": "Specify whether you want to enable Standard tier for Azure App Service resource type"
+                }
+            },
+            "paasSQLServiceTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "description": "Specify whether you want to enable Standard tier for PaaS SQL Service resource type"
+                }
+            },
+            "sqlServerOnVmTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "description": "Specify whether you want to enable Standard tier for SQL Server on VM resource type"
+                }
+            },
+            "storageAccountTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "description": "Specify whether you want to enable Standard tier for Storage Account resource type"
+                }
+            },
+            "kubernetesServiceTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "description": "Specify whether you want to enable Standard tier for Kubernetes service resource type"
+                }
+            },
+            "containerRegistryTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "description": "Specify whether you want to enable Standard tier for Container Registry resource type"
+                }
+            },
+            "keyvaultTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "description": "Specify whether you want to enable Standard tier for Key Vault resource type"
+                }
+            }
+        }
+    }
+}

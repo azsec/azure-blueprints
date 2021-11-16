@@ -1,0 +1,133 @@
+{
+    "kind": "template",
+    "id": "/providers/Microsoft.Blueprint/blueprints/azsec_foundation/artifacts/log_blueprint",
+    "type": "Microsoft.Blueprint/blueprints/artifacts",
+    "name": "log_blueprint",
+    "properties": {
+        "resourceGroup": "projectResourceGroup",
+        "displayName": "Log Analytics template",
+        "description": "A blueprint to deploy Log Analytics",
+        "template": {
+            "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+            "contentVersion": "1.0.0.0",
+            "parameters": {
+                "resourceTags": {
+                    "type": "object",
+                    "defaultValue": {
+                        "CostCenter": "",
+                        "Owner": ""
+                    },
+                    "metadata": {
+                        "displayName": "Global resource tag that follows Azure governance"
+                    }
+                },
+                "projectCode": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 5,
+                    "metadata": {
+                        "displayName": "Project Code (e.g. AGS), must be unique"
+                    }
+                },
+                "projectStage": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 5,
+                    "defaultValue": "dev",
+                    "allowedValues": [
+                        "prod",
+                        "dev",
+                        "test",
+                        "uat"
+                    ],
+                    "metadata": {
+                        "displayName": "Project Stage",
+                        "description": "Specify project stage"
+                    }
+                },
+                "projectLogAnalyticsSku": {
+                    "type": "string",
+                    "defaultValue": "PerGB2018",
+                    "allowedValues": [
+                        "Standalone",
+                        "PerNode",
+                        "PerGB2018"
+                    ],
+                    "metadata": {
+                        "displayName": "Log Analytics SKU",
+                        "description": "Specify SKU for project log analytics workspace"
+                    }
+                },
+                "projectLogWorkspaceDataRetention": {
+                    "type": "int",
+                    "defaultValue": 90,
+                    "minValue": 30,
+                    "maxValue": 365,
+                    "metadata": {
+                        "displayName": "Log Analytics data rentention in days",
+                        "description": "Specify data retention for project Log Analytics workspace"
+                    }
+                },
+                "projectLogWorkspaceLocation": {
+                    "type": "string",
+                    "allowedValues": [
+                        "westus",
+                        "westus2",
+                        "eastus",
+                        "eastus2",
+                        "centralus"
+                    ],
+                    "metadata": {
+                        "displayName": "Log Analytics Workspace location",
+                        "description": "Location of the Log Analytics workspace. Find available regions and add more to the list"
+                    }
+                }
+            },
+            "variables": {
+                "customTag": {
+                    "ProjectCode": "[parameters('projectCode')]",
+                    "Environemnt": "[parameters('projectStage')]"
+                },
+                "projectWorkspaceName": "[concat(parameters('projectCode'), '-', parameters('projectStage'), '-workspace')]"
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.OperationalInsights/workspaces",
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "[variables('projectWorkspaceName')]",
+                    "location": "[parameters('projectLogWorkspaceLocation')]",
+                    "tags": "[union(parameters('resourceTags'),variables('customTag'))]",
+                    "properties": {
+                        "sku": {
+                            "name": "[parameters('projectLogAnalyticsSku')]"
+                        },
+                        "retentionInDays": "[parameters('projectLogWorkspaceDataRetention')]"
+                    }
+                }
+            ],
+            "outputs": {
+            }
+        },
+        "parameters": {
+            "resourceTags": {
+                "value": "[parameters('g_resourceTags')]"
+            },
+            "projectCode": {
+                "value": "[parameters('g_projectCode')]"
+            },
+            "projectStage": {
+                "value": "[parameters('g_projectStage')]"
+            },
+            "projectLogAnalyticsSku": {
+                "value": "[parameters('ags_projectLogWorkspaceSku')]"
+            },
+            "projectLogWorkspaceDataRetention": {
+                "value": "[parameters('ags_projectLogWorkspaceDataRetention')]"
+            },
+            "projectLogWorkspaceLocation": {
+                "value": "[parameters('ags_projectLogWorkspaceLocation')]"
+            }
+        },
+        "dependsOn": []
+    }
+}

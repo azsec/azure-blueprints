@@ -1,0 +1,348 @@
+{
+    "id": "/providers/Microsoft.Blueprint/blueprints/azsec_foundation",
+    "type": "Microsoft.Blueprint/blueprints",
+    "name": "azsec_foundation",
+    "properties": {
+        "targetScope": "subscription",
+        "displayName": "AzSec Foundation Blueprint",
+        "description": "AzSec Foundation Blueprint provides foundation templates for a new project",
+        "parameters": {
+            "g_resourceTags": {
+                "type": "object",
+                "defaultValue": {
+                    "CostCenter": "",
+                    "Owner": ""
+                },
+                "metadata": {
+                    "displayName": "Global resource tag that follows Azure governance"
+                }
+            },
+            "g_projectCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 5,
+                "metadata": {
+                    "displayName": "Project Code (e.g. AGS), must be unique"
+                }
+            },
+            "g_projectStage": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 5,
+                "defaultValue": "dev",
+                "allowedValues": [
+                    "prod",
+                    "dev",
+                    "test",
+                    "uat"
+                ],
+                "metadata": {
+                    "displayName": "Project Stage",
+                    "description": "Specify project stage"
+                }
+            },
+            "ags_resourceGroupLocation": {
+                "type": "string",
+                "defaultValue": "centralus",
+                "allowedValues": [
+                    "eastasia",
+                    "southeastasia",
+                    "centralus",
+                    "eastus",
+                    "eastus2",
+                    "westus",
+                    "northcentralus",
+                    "southcentralus",
+                    "northeurope",
+                    "westeurope",
+                    "japanwest",
+                    "japaneast",
+                    "southindia",
+                    "centralindia",
+                    "westindia",
+                    "westcentralus",
+                    "westus2"
+                ],
+                "metadata": {
+                    "displayName": "Resource group location"
+                }
+            },
+            "sharedGlobalworkspaceName": {
+                "type": "string",
+                "defaultValue": "shared-security-workspace",
+                "allowedValues": [
+                    "shared-security-workspace"
+                ],
+                "metadata": {
+                    "displayName": "Shared Global workspace Name",
+                    "description": "Name of the central Log Analytics workspace that stores security event and data collected by Azure Security Center"
+                }
+            },
+            "sharedGlobalworkspaceRgName": {
+                "type": "string",
+                "defaultValue": "shared-security-services-rg",
+                "allowedValues": [
+                    "shared-security-services-rg"
+                ],
+                "metadata": {
+                    "displayName": "Shared Global workspace Resource Group Name",
+                    "description": "Name of the resource group where the central log analytics workspace belongs to"
+                }
+            },
+            "g_sharedGlobalWorkspaceSubId": {
+                "type":"string",
+                "metadata": {
+                    "displayName": "Shared Global workspace Subscription ID",
+                    "description": "Subscription ID of the Global Workspace"
+                }
+            },
+            "autoProvisionSetting": {
+                "type": "string",
+                "defaultValue": "On",
+                "allowedValues": [
+                    "On",
+                    "Off"
+                ],
+                "metadata": {
+                    "displayName": "Auto Provisioning Setting for Azure Security Center",
+                    "description": "Specify whether Auto Provisoning is turned on or off"
+                }
+            },
+            "ascOwnerEmail": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "Azure Security Center Admin Email",
+                    "description": "Email of the administrator who should be notified about Azure Security Center alert"
+                }
+            },
+            "ascOwnerContact": {
+                "type": "string",
+                "metadata": {
+                    "displayName": "Azure Security Center Admin Phone Contact",
+                    "description": "Phone number of the administrator should be notified about Azure Security Center alert"
+                }
+            },
+            "highSeverityAlertNotification": {
+                "type": "string",
+                "defaultValue": "On",
+                "allowedValues": [
+                    "On",
+                    "Off"
+                ],
+                "metadata": {
+                    "displayName": "Alert Notification for Azure Security Center high severity",
+                    "description": "Specify whether you want to notify high severity alert to ASC administrator"
+                }
+            },
+            "subscriptionOwnerNotification": {
+                "type": "string",
+                "defaultValue": "On",
+                "allowedValues": [
+                    "On",
+                    "Off"
+                ],
+                "metadata": {
+                    "displayName": "Alert Notification for subscription owner",
+                    "description": "Specifiy whether you want to notify high severity alert to subscription owner"
+                }
+            },
+            "virtualMachineTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "ASC - Virtual Machine Tier",
+                    "description": "Specifiy whether you want to enable Standard tier for Virtual Machine resource type"
+                }
+            },
+            "appServiceTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "ASC - App Service Tier",
+                    "description": "Specify whether you want to enable Standard tier for Azure App Service resource type"
+                }
+            },
+            "paasSQLServiceTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "ASC - PaaS SQL Service Tier",
+                    "description": "Specify whether you want to enable Standard tier for PaaS SQL Service resource type"
+                }
+            },
+            "sqlServerOnVmTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "ASC - SQL Server on VM Tier",
+                    "description": "Specify whether you want to enable Standard tier for SQL Server on VM resource type"
+                }
+            },
+            "storageAccountTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "ASC - Storage Account Tier",
+                    "description": "Specify whether you want to enable Standard tier for Storage Account resource type"
+                }
+            },
+            "kubernetesServiceTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "ASC - Kubernetes Service Tier",
+                    "description": "Specify whether you want to enable Standard tier for Kubernetes service resource type"
+                }
+            },
+            "containerRegistryTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "ASC - Container Registry Tier",
+                    "description": "Specify whether you want to enable Standard tier for Container Registry resource type"
+                }
+            },
+            "keyvaultTier": {
+                "type": "string",
+                "defaultValue": "Standard",
+                "allowedValues": [
+                    "Standard",
+                    "Free"
+                ],
+                "metadata": {
+                    "displayName": "ASC - Key Vault Tier",
+                    "description": "Specify whether you want to enable Standard tier for Key Vault resource type"
+                }
+            },
+            "ags_projectLogWorkspaceSku": {
+                "type": "string",
+                "defaultValue": "PerGB2018",
+                "allowedValues": [
+                    "Standalone",
+                    "PerNode",
+                    "PerGB2018"
+                ],
+                "metadata": {
+                    "displayName": "ASC - Local Project Log Analytics workspace",
+                    "description": "Specify SKU for project log analytics workspace"
+                }
+            },
+            "ags_projectLogWorkspaceDataRetention": {
+                "type": "int",
+                "defaultValue": 90,
+                "minValue": 30,
+                "maxValue": 365,
+                "metadata": {
+                    "displayName": "Log Analytics data rentention in days",
+                    "description": "Specify data retention for project Log Analytics workspace"
+                }
+            },
+            "ags_projectLogWorkspaceLocation": {
+                "type": "string",
+                "allowedValues": [
+                    "westus",
+                    "westus2",
+                    "eastus",
+                    "eastus2",
+                    "centralus"
+                ],
+                "metadata": {
+                    "displayName": "Local Project Log Analytics workspace location",
+                    "description": "Location of the Log Analytics workspace. Find available regions and add more to the list"
+                }
+            },
+            "g_storageAccountPrefix": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 8,
+                "metadata": {
+                    "displayName": "Storage Account Name Prefix",
+                    "description": "Prefix of storage account name e.g log, data"
+                }
+            },
+            "g_storageAccountSku": {
+                "type": "string",
+                "defaultValue": "Standard_LRS",
+                "allowedValues": [
+                  "Standard_LRS",
+                  "Standard_GRS",
+                  "Standard_RAGRS",
+                  "Standard_ZRS",
+                  "Premium_LRS",
+                  "Premium_ZRS",
+                  "Standard_GZRS",
+                  "Standard_RAGZRS"
+                ],
+                "metadata": {
+                  "displayName": "Storage Account SKU",
+                  "description": "Storage Account type. Each type support different replication"
+                }
+            },
+            "g_storageAccountType": {
+                "type": "string",
+                "defaultValue": "StorageV2",
+                "metadata": {
+                    "displayName": "Storage Account Type",
+                    "description": "Storage account type. V2 is always recommended"
+                }
+            },
+            "g_storageAtpEnabled": {
+                "type": "bool",
+                "defaultValue": true,
+                "allowedValues": [
+                    true,
+                    false
+                ],
+                "metadata": {
+                    "displayName": "Enable Advanced Threat Protection",
+                    "description": "Enable or disable Advanced Threat Protection."
+                }
+            }
+        },
+        "resourceGroups": {
+            "projectResourceGroup": {
+                "name": "[concat(parameters('g_projectCode'), '-', parameters('g_projectStage'), '-rg')]",
+                "location": "[parameters('ags_resourceGroupLocation')]",
+                "metadata": {
+                    "displayName": "Project resource group",
+                    "description": "This resource group contains shared services such as Key Vault, Log Analytics Workspace, Virtual Network"
+                }
+            },
+            "virtualMachineResourceGroup": {
+                "name": "[concat(parameters('g_projectCode'), '-', parameters('g_projectStage'), '-vm', '-rg')]",
+                "location": "[parameters('ags_resourceGroupLocation')]",
+                "metadata": {
+                    "displayName": "Virtual Machine Developer resource group"
+                }
+            }
+        }
+    }
+}

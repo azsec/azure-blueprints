@@ -1,0 +1,16 @@
+{
+    "id": "/providers/Microsoft.Blueprint/blueprints/azsec_foundation",
+    "type": "Microsoft.Blueprint/blueprints",
+    "name": "azsec_foundation",
+    "properties": {
+        "targetScope": "subscription",
+        "displayName": "AzSec Foundation Blueprint",
+        "description": "AzSec Foundation Blueprint provides foundation templates for a new project",
+        "parameters": {
+
+        },
+        "resourceGroups": {
+            
+        }
+    }
+}
